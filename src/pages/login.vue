@@ -6,7 +6,7 @@
       <div class="header">
 
   <div class="logo">
-    💰
+    💰💰
   </div>
 
   <h1>Welcome Back</h1>
