@@ -98,6 +98,7 @@ import { reactive, ref } from "vue";
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
+// Form data
 const form = reactive({
   username: "",
   email: "",
@@ -105,23 +106,36 @@ const form = reactive({
   confirmPassword: ""
 });
 
+// Register function
 async function register() {
 
-  // Password validation
+  // Empty field validation
+  if (
+    !form.username.trim() ||
+    !form.email.trim() ||
+    !form.password.trim() ||
+    !form.confirmPassword.trim()
+  ) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  // Password match validation
   if (form.password !== form.confirmPassword) {
     alert("Passwords do not match");
     return;
   }
 
-  // Object to send to backend
+  // Data sent to Spring Boot backend
   const signupData = {
     username: form.username,
     email: form.email,
     password: form.password
   };
-                        //here we connect sb..!
+
   try {
 
+    // API call
     const response = await fetch(
       "http://localhost:8080/api/auth/signup",
       {
@@ -135,17 +149,23 @@ async function register() {
       }
     );
 
-    // Convert response to JSON
-    const data = await response.json();
+    // Convert response safely
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
 
     // Success
     if (response.ok) {
 
       alert("Registration successful!");
 
-      console.log(data);
+      console.log("Backend Response:", data);
 
-      // Optional reset form
+      // Reset form
       form.username = "";
       form.email = "";
       form.password = "";
@@ -153,16 +173,16 @@ async function register() {
 
     } else {
 
-      // Backend error message
+      // Backend error
       alert(data.message || "Registration failed");
 
     }
 
   } catch (error) {
 
-    console.error(error);
+    console.error("Error:", error);
 
-    alert("Cannot connect to server");
+    alert("Cannot connect to Spring Boot server");
 
   }
 }

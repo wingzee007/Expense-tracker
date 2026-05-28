@@ -84,25 +84,93 @@
 
 <script setup>
 import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const showPassword = ref(false);
 
+// Login form data
 const form = reactive({
   identifier: "",
   password: ""
 });
 
-function login() {
+// Login function
+async function login() {
 
+  // Validation
   if (
-    !form.identifier ||
-    !form.password
+    !form.identifier.trim() ||
+    !form.password.trim()
   ) {
     alert("Please fill all fields");
     return;
   }
 
-  console.log(form);
+  // Data sent to backend
+  const loginData = {
+    identifier: form.identifier,
+    password: form.password
+  };
+
+  try {
+
+    // API call to Spring Boot
+    const response = await fetch(
+      "http://localhost:8080/api/auth/login",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(loginData)
+      }
+    );
+
+    // Convert response safely
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    // Success
+    if (response.ok) {
+
+      alert("Login successful!");
+
+      console.log("Backend Response:", data);
+
+      // OPTIONAL:
+      // Save JWT token if backend returns one
+      // localStorage.setItem("token", data.token);
+
+      // Reset form
+      form.identifier = "";
+      form.password = "";
+
+      // Redirect to dashboard/home
+      router.push("/dashboard");
+
+    } else {
+
+      // Backend error message
+      alert(data.message || "Invalid username or password");
+
+    }
+
+  } catch (error) {
+
+    console.error("Error:", error);
+
+    alert("Cannot connect to Spring Boot server");
+
+  }
 }
 </script>
 
