@@ -159,7 +159,7 @@ async function register() {
     }
 
     // Success
-    if (response.ok) {
+    if (response.ok) { 
 
       alert("Registration successful!");
 
