@@ -5,7 +5,7 @@
 
       <div class="header">
 
-        <div class="logo">💰</div>
+        <div class="logo">💰++</div>
 
         <h1>Create Your Account</h1>
 
